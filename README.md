@@ -23,4 +23,4 @@ The **Surge Pay Calculator** is a web-based tool designed to help employees quic
 ## 🔗 How to Access
 This calculator is available online and can be accessed from any device. Simply visit the provided link and enter your hours to get an instant estimate of your earnings.
 
-If you have any questions, contact your **supervisor or payroll team** for further clarification. 🚀
+If you have any questions, contact your **timekeeper** for further clarification. 🚀
