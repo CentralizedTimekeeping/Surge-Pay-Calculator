@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Surge Pay Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 40px;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0073e6;
+            color: white;
+            font-weight: bold;
+        }
+        input {
+            width: 80%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .highlight-input {
+            background-color: #ffeb99;
+            font-weight: bold;
+            border: 2px solid #ffa500;
+        }
+        .total-row {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .calculation {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Surge Pay Calculator</h2>
+        <label for="basePayRate" style="font-weight: bold; color: #d9534f;">Enter Base Surge Pay Rate First: $</label>
+        <input type="number" id="basePayRate" class="highlight-input" oninput="calculateHours()" step="0.01" value="0">
+        
+        <table>
+            <tr>
+                <th>Input Type</th>
+                <th>Hours Worked</th>
+                <th>Adjusted Hours</th>
+                <th>Calculated Pay</th>
+                <th>Pay per Actual Hour Worked</th>
+            </tr>
+            <tr>
+                <td>Regular Surge Shift (Weekdays 7AM-7PM)</td>
+                <td><input type="number" id="regularHours" oninput="calculateHours()"></td>
+                <td><span id="regularAdjusted">0</span></td>
+                <td>$<span id="regularPay">0.00</span><br><span class="calculation" id="regularCalculation">(Base × Adjusted)</span></td>
+                <td>$<span id="regularPerHour">0.00</span><br><span class="calculation" id="regularRateCalculation">(Pay ÷ Hours Worked)</span></td>
+            </tr>
+            <tr>
+                <td>Night Shift Surge Shift (Weekdays 7PM-7AM)</td>
+                <td><input type="number" id="nightHours" oninput="calculateHours()"></td>
+                <td><span id="nightAdjusted"><span id="nightCalculation">(0 × 1.5)</span></span></td>
+                <td>$<span id="nightPay">0.00</span><br><span class="calculation" id="nightCalculation">(Base × Adjusted)</span></td>
+                <td>$<span id="nightPerHour">0.00</span><br><span class="calculation" id="nightRateCalculation">(Pay ÷ Hours Worked)</span></td>
+            </tr>
+            <tr>
+                <td>Weekend Surge Shift (Fri 7PM - Mon 7AM)</td>
+                <td><input type="number" id="weekendHours" oninput="calculateHours()"></td>
+                <td><span id="weekendAdjusted"><span id="weekendCalculation">(0 × 1.75)</span></span></td>
+                <td>$<span id="weekendPay">0.00</span><br><span class="calculation" id="weekendCalculation">(Base × Adjusted)</span></td>
+                <td>$<span id="weekendPerHour">0.00</span><br><span class="calculation" id="weekendRateCalculation">(Pay ÷ Hours Worked)</span></td>
+            </tr>
+            <tr class="total-row">
+                <td>Shift Diff Market Driven</td>
+                <td></td>
+                <td><span id="totalAdjusted">0</span></td>
+                <td>$<span id="totalPay">0.00</span></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        function calculateHours() {
+            let basePayRate = parseFloat(document.getElementById('basePayRate').value) || 0;
+            let regularHours = parseFloat(document.getElementById('regularHours').value) || 0;
+            let nightHours = parseFloat(document.getElementById('nightHours').value) || 0;
+            let weekendHours = parseFloat(document.getElementById('weekendHours').value) || 0;
+
+            let adjustedRegular = regularHours;
+            let adjustedNight = nightHours * 1.5;
+document.getElementById('nightCalculation').innerHTML = `<span class='calculation'>(${nightHours} × 1.5)</span>`;
+            let adjustedWeekend = weekendHours * 1.75;
+document.getElementById('weekendCalculation').innerHTML = `<span class='calculation'>(${weekendHours} × 1.75)</span>`;
+            let totalAdjusted = adjustedRegular + adjustedNight + adjustedWeekend;
+
+            let regularPay = adjustedRegular * basePayRate;
+            let nightPay = adjustedNight * basePayRate;
+            let weekendPay = adjustedWeekend * basePayRate;
+            let totalPay = regularPay + nightPay + weekendPay;
+
+            let regularPerHour = regularPay / (regularHours || 1);
+            let nightPerHour = nightPay / (nightHours || 1);
+            let weekendPerHour = weekendPay / (weekendHours || 1);
+
+            document.getElementById('regularAdjusted').innerText = adjustedRegular.toFixed(2);
+            document.getElementById('nightAdjusted').innerHTML = `${adjustedNight.toFixed(2)} <br> (${nightHours} × 1.5)`;
+            document.getElementById('weekendAdjusted').innerHTML = `${adjustedWeekend.toFixed(2)} <br> (${weekendHours} × 1.75)`;
+            document.getElementById('totalAdjusted').innerHTML = `<strong>${totalAdjusted.toFixed(2)}</strong>`;
+
+            document.getElementById('regularPay').innerText = regularPay.toFixed(2);
+document.getElementById('regularCalculation').innerText = `(Base × ${adjustedRegular.toFixed(2)})`;
+            document.getElementById('nightPay').innerText = nightPay.toFixed(2);
+document.getElementById('nightCalculation').innerText = `(Base × ${adjustedNight.toFixed(2)})`;
+            document.getElementById('weekendPay').innerText = weekendPay.toFixed(2);
+document.getElementById('weekendCalculation').innerText = `(Base × ${adjustedWeekend.toFixed(2)})`;
+            document.getElementById('totalPay').innerText = totalPay.toFixed(2);
+
+            document.getElementById('regularPerHour').innerText = `${regularPerHour.toFixed(2)}/hr`;
+            document.getElementById('nightPerHour').innerText = `${nightPerHour.toFixed(2)}/hr`;
+            document.getElementById('weekendPerHour').innerText = `${weekendPerHour.toFixed(2)}/hr`;
+        }
+    </script>
+</body>
+</html>
