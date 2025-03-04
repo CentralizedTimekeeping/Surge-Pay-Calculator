@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surge Pay Calculator</title>
     <style>
         body {
@@ -9,17 +11,33 @@
             margin: 40px;
             background-color: #f4f4f4;
         }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
         .container {
             width: 50%;
             margin: auto;
             background: white;
             padding: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            color: #d9534f;
+        }
+        input {
+            width: 80%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .highlight-input {
+            background-color: #ffeb99;
+            font-weight: bold;
+            border: 2px solid #ffa500;
         }
         table {
             width: 100%;
@@ -34,19 +52,6 @@
         th {
             background-color: #0073e6;
             color: white;
-            font-weight: bold;
-        }
-        input {
-            width: 80%;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-        }
-        .highlight-input {
-            background-color: #ffeb99;
-            font-weight: bold;
-            border: 2px solid #ffa500;
         }
         .total-row {
             background-color: #f2f2f2;
@@ -61,40 +66,40 @@
 <body>
     <div class="container">
         <h2>Surge Pay Calculator</h2>
-        <label for="basePayRate" style="font-weight: bold; color: #d9534f;">Enter Base Surge Pay Rate First: $</label>
+        <label for="basePayRate">Enter Base Surge Pay Rate: $</label>
         <input type="number" id="basePayRate" class="highlight-input" oninput="calculateHours()" step="0.01" value="0">
         
         <table>
             <tr>
-                <th>Input Type</th>
+                <th>Shift Type</th>
                 <th>Hours Worked</th>
                 <th>Adjusted Hours</th>
                 <th>Calculated Pay</th>
-                <th>Pay per Actual Hour Worked</th>
+                <th>Hourly Rate</th>
             </tr>
             <tr>
                 <td>Regular Surge Shift (Weekdays 7AM-7PM)</td>
                 <td><input type="number" id="regularHours" oninput="calculateHours()"></td>
                 <td><span id="regularAdjusted">0</span></td>
-                <td>$<span id="regularPay">0.00</span><br><span class="calculation" id="regularCalculation">(Base × Adjusted)</span></td>
+                <td>$<span id="regularPay">0.00</span></td>
                 <td>$<span id="regularPerHour">0.00</span>/hr</td>
             </tr>
             <tr>
-                <td>Night Shift Surge Shift (Weekdays 7PM-7AM)</td>
+                <td>Night Shift Surge (Weekdays 7PM-7AM)</td>
                 <td><input type="number" id="nightHours" oninput="calculateHours()"></td>
                 <td><span id="nightAdjusted">0</span></td>
-                <td>$<span id="nightPay">0.00</span><br><span class="calculation" id="nightCalculation">(Base × Adjusted)</span></td>
+                <td>$<span id="nightPay">0.00</span></td>
                 <td>$<span id="nightPerHour">0.00</span>/hr</td>
             </tr>
             <tr>
                 <td>Weekend Surge Shift (Fri 7PM - Mon 7AM)</td>
                 <td><input type="number" id="weekendHours" oninput="calculateHours()"></td>
                 <td><span id="weekendAdjusted">0</span></td>
-                <td>$<span id="weekendPay">0.00</span><br><span class="calculation" id="weekendCalculation">(Base × Adjusted)</span></td>
+                <td>$<span id="weekendPay">0.00</span></td>
                 <td>$<span id="weekendPerHour">0.00</span>/hr</td>
             </tr>
             <tr class="total-row">
-                <td>Shift Diff Market Driven</td>
+                <td>Total</td>
                 <td></td>
                 <td><span id="totalAdjusted">0</span></td>
                 <td>$<span id="totalPay">0.00</span></td>
@@ -110,19 +115,18 @@
             let nightHours = parseFloat(document.getElementById('nightHours').value) || 0;
             let weekendHours = parseFloat(document.getElementById('weekendHours').value) || 0;
 
-            let adjustedRegular = regularHours;
             let adjustedNight = nightHours * 1.5;
             let adjustedWeekend = weekendHours * 1.75;
-            let totalAdjusted = adjustedRegular + adjustedNight + adjustedWeekend;
+            let totalAdjusted = regularHours + adjustedNight + adjustedWeekend;
 
-            let regularPay = adjustedRegular * basePayRate;
+            let regularPay = regularHours * basePayRate;
             let nightPay = adjustedNight * basePayRate;
             let weekendPay = adjustedWeekend * basePayRate;
             let totalPay = regularPay + nightPay + weekendPay;
 
-            document.getElementById('regularAdjusted').innerText = adjustedRegular.toFixed(2);
-            document.getElementById('nightAdjusted').innerText = `${adjustedNight.toFixed(2)} (${nightHours} × 1.5)`;
-            document.getElementById('weekendAdjusted').innerText = `${adjustedWeekend.toFixed(2)} (${weekendHours} × 1.75)`;
+            document.getElementById('regularAdjusted').innerText = regularHours.toFixed(2);
+            document.getElementById('nightAdjusted').innerText = adjustedNight.toFixed(2);
+            document.getElementById('weekendAdjusted').innerText = adjustedWeekend.toFixed(2);
             document.getElementById('totalAdjusted').innerHTML = `<b>${totalAdjusted.toFixed(2)}</b>`;
 
             document.getElementById('regularPay').innerText = regularPay.toFixed(2);
@@ -130,68 +134,10 @@
             document.getElementById('weekendPay').innerText = weekendPay.toFixed(2);
             document.getElementById('totalPay').innerText = totalPay.toFixed(2);
 
-            document.getElementById('regularPerHour').innerText = `${(regularPay / (regularHours || 1)).toFixed(2)}`;
-            document.getElementById('nightPerHour').innerText = `${(nightPay / (nightHours || 1)).toFixed(2)}`;
-            document.getElementById('weekendPerHour').innerText = `${(weekendPay / (weekendHours || 1)).toFixed(2)}`;
+            document.getElementById('regularPerHour').innerText = (regularPay / (regularHours || 1)).toFixed(2);
+            document.getElementById('nightPerHour').innerText = (nightPay / (nightHours || 1)).toFixed(2);
+            document.getElementById('weekendPerHour').innerText = (weekendPay / (weekendHours || 1)).toFixed(2);
         }
     </script>
-<hr>
-<section id="readme-content" style="max-width: 800px; margin: auto; text-align: left; font-size: 16px; line-height: 1.6;">
-    <h2 style="text-align: center; font-size: 24px;">⚙️ How It Works</h2>
-
-    <ol>
-        <li><strong>Enter your Base Surge Pay Rate</strong> in the yellow box at the top.</li>
-        <li><strong>Input the hours worked</strong> for each shift type:</li>
-    </ol>
-
-    <ul style="list-style-type: disc; margin-left: 40px;">
-        <li><strong>Regular Surge Shift:</strong> Weekdays (7 AM – 7 PM)</li>
-        <li><strong>Night Surge Shift:</strong> Weekdays (7 PM – 7 AM)</li>
-        <li><strong>Weekend Surge Shift:</strong> Friday 7 PM – Monday 7 AM</li>
-    </ul>
-
-    <ol start="3">
-        <li>The calculator <strong>automatically adjusts</strong> your hours and calculates:</li>
-    </ol>
-
-    <ul style="list-style-type: disc; margin-left: 40px;">
-        <li>Adjusted hours with detailed breakdowns</li>
-        <li>Pay calculations using your entered base rate</li>
-        <li>Pay per actual hour worked, displayed as "$x.xx/hr"</li>
-        <li>A final total showing your expected earnings</li>
-    </ul>
-
-    <h2 style="text-align: center; font-size: 24px;">🎯 Why Use This?</h2>
-    <ul style="list-style-type: none; margin-left: 20px;">
-        <li>✔️ <strong>Quickly estimate</strong> your adjusted hours and earnings</li>
-        <li>✔️ Ensure accuracy in <strong>shift-based pay calculations</strong></li>
-        <li>✔️ Provides <strong>real-time</strong> results for easy review before payroll processing</li>
-    </ul>
-
-    <h2 style="text-align: center; font-size: 24px;">🔗 How to Access</h2>
-    <p style="text-align: center;">
-        This calculator is available online and can be accessed from any device. Simply visit the provided link and enter your hours to get an instant estimate of your earnings.
-    </p>
-    <p style="text-align: center;">
-        If you have any questions, contact your <strong>supervisor or payroll team</strong> for further clarification. 🚀
-    </p>
-</section>
-
-        </li>
-    </ol>
-
-    <h2>🎯 Why Use This?</h2>
-    <ul>
-        <li>✔️ Quickly estimate your <strong>adjusted hours</strong> and <strong>earnings</strong></li>
-        <li>✔️ Ensure accuracy in <strong>shift-based pay calculations</strong></li>
-        <li>✔️ Provides <strong>real-time</strong> results for easy review before payroll processing</li>
-    </ul>
-
-    <h2>🔗 How to Access</h2>
-    <p>This calculator is available online and can be accessed from any device. Simply visit the provided link and enter your hours to get an instant estimate of your earnings.</p>
-
-    <p>If you have any questions, contact your <strong>Timekeeper</strong> for further clarification. 🚀</p>
-</section>
-
 </body>
 </html>
